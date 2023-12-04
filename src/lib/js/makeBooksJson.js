@@ -1,48 +1,37 @@
-'use strict';
-import Database from 'better-sqlite3';
-import fs from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
-const moduleName = process.argv[2];
+const makeBooks = ({ moduleName, bibleDb }) => {
+  const modulePath = 'static/json-api/' + moduleName;
+  if (!existsSync(modulePath)) {
+    mkdirSync(modulePath);
+  }
 
-const db = new Database(`./database/${moduleName}.SQLite3`);
+  const books = bibleDb.prepare('SELECT * FROM books').all();
 
-const modulePath = `./static/${moduleName}`;
-if (!fs.existsSync(modulePath)) {
-  fs.mkdirSync(modulePath);
-}
-
-const books = db
-  .prepare('SELECT * FROM books')
-  .all();
-
-const maxChapters = db
-  .prepare(
-    `SELECT book_number, max(chapter) as max_chapter
+  const maxChapters = bibleDb
+    .prepare(
+      `SELECT book_number, max(chapter) as max_chapter
     FROM verses
     WHERE verse= 1
-    GROUP BY book_number`)
-  .all();
+    GROUP BY book_number`
+    )
+    .all();
 
-let dataForWrite = {};
+  let dataForWrite = {};
 
-dataForWrite.books = books.reduce(
-  (accumulator, currentValue) => {
+  dataForWrite.books = books.reduce((accumulator, currentValue) => {
     return { ...accumulator, [currentValue.book_number]: currentValue };
-  },
-  {}
-);
+  }, {});
 
-dataForWrite.maxChapters = maxChapters.reduce(
-  (accumulator, currentValue) => {
-    return { ...accumulator, [currentValue.book_number]: currentValue }
-  },
-  {}
-);
+  dataForWrite.maxChapters = maxChapters.reduce((accumulator, currentValue) => {
+    return { ...accumulator, [currentValue.book_number]: currentValue };
+  }, {});
 
+  try {
+    writeFileSync(`${modulePath}/books.json`, JSON.stringify(dataForWrite));
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-try {
-  fs.writeFileSync(`${modulePath}/books.json`, JSON.stringify(dataForWrite));
-} catch (err) {
-  console.error(err);
-}
-
+export default makeBooks;
