@@ -13,7 +13,16 @@ type InfoObj = {
   [name: string]: string;
 };
 
-let infoData = readdirSync('static/media/')
+type Book = {
+  book_number: number;
+  max_chapter: number;
+};
+
+type BooksObj = {
+  [bookNumber: number]: number;
+};
+
+const infoData = readdirSync('static/media/')
   .filter((fileName) => /^.+(?!(?:dictionary|commentary))\.(?:SQL|sql)ite3$/.test(fileName))
   .map((fileName) => {
     const bibleDb = new Database('static/media/' + fileName);
@@ -32,10 +41,17 @@ let infoData = readdirSync('static/media/')
         return { ...infoObj, [name]: value };
       }, {}),
       books: (
-        bibleDb.prepare(`select book_number FROM books`).all() as { book_number: number }[]
-      ).map<number>((book: { book_number: number }): number => {
-        return book.book_number;
-      })
+        bibleDb
+          .prepare(
+            `SELECT book_number, max(chapter) as max_chapter
+          FROM verses
+          WHERE verse= 1
+          GROUP BY book_number`
+          )
+          .all() as Book[]
+      ).reduce<BooksObj>((accumulator: BooksObj, book: Book): BooksObj => {
+        return { ...accumulator, [book.book_number]: book.max_chapter };
+      }, {})
     };
   })
   .reduce((accumulator, module) => {
