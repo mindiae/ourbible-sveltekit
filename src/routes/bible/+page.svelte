@@ -448,6 +448,7 @@
             {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
               {#if !pickedModules[1]}
                 <sup>{verse.verse}</sup>
+
                 {#if pickedModules[0].includes('+')}
                   <VerseText data={verse.text} />
                 {:else}
@@ -456,6 +457,7 @@
               {:else}
                 <div class="flex">
                   <div class="flex py-2">{verse.verse}</div>
+
                   {#each pickedModules.filter((module) => !!module) as _, moduleNumber (moduleNumber)}
                     <div class="flex-1 p-2">
                       {#if !!pickedVerses[moduleNumber]?.chapter[verse.verse]}
