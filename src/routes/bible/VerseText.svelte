@@ -1,11 +1,11 @@
 <script lang="ts">
-  interface Data {
+  interface TextData {
     name: string;
     data?: string;
     S?: string;
     m?: string;
   }
-  export let data: Data[];
+  export let data: TextData[];
 </script>
 
 <span>

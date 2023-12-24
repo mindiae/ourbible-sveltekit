@@ -33,9 +33,16 @@
     [moduleName: string]: BibleModule;
   };
 
+  interface TextData {
+    name: string;
+    data?: string;
+    S?: string;
+    m?: string;
+  }
+
   interface Verse {
     verse: number;
-    text: string;
+    text: string | TextData[];
   }
 
   interface Chapter {
@@ -84,6 +91,8 @@
   let default_module = 'NTPT+';
   let modules_obj: BibleModules;
   let uiModule: string;
+  let booksData: { [books: string]: BooksData } = {};
+  let versesData: { [verses: string]: Data } = {};
   let pickedModules = [default_module, '', ''];
   let bookNumber: number;
   let chapterNumber: number;
@@ -128,54 +137,26 @@
     const tmpEndveVerseNumber = urlParams.get('e') || '';
     endVerseNumber = parseInt(tmpEndveVerseNumber);
 
-    pickedModules.forEach((module, i) => {
-      if (!!module) {
-        setBooks(i).then((data) => {
-          pickedBooks[i] = data;
-          pickedBooks = pickedBooks;
-        });
-        setVerses(i).then((data) => {
-          pickedVerses[i] = data;
-          pickedVerses = pickedVerses;
-        });
-      }
-    });
+    moveToOtherPlace();
   });
+
+  const moveToOtherPlace = async () => {
+    for (let [module, _] of Object.entries(modules_obj)) {
+      const vresponse = await fetch(`/bibles/${module}/books.json`);
+      booksData[module] = await vresponse.json();
+
+      const bresponse = await fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`);
+      versesData[module] = await bresponse.json();
+    }
+    booksData = booksData;
+    versesData = versesData;
+  };
 
   let showingBooksDropdown = false;
   let showingChaptersDropdown = false;
 
-  let pickedVerses: (Data | undefined)[] = [];
-
   const buttonClass =
     'inline-flex bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 shadow align-middle leading-[1em] disabled:opacity-50';
-
-  const setVerses = async (i: number) => {
-    if (!!modules_obj[pickedModules[i]]?.books[bookNumber] && browser) {
-      const response = await fetch(
-        `/bibles/${pickedModules[i]}/${bookNumber}/${chapterNumber}.json`
-      );
-      const data = await response.json();
-      return data;
-    }
-    return undefined;
-  };
-
-  const setAllVerses = async () => {
-    const promises = Array.from({ length: pickedModules.length - 1 }, (_, i) => i).map((i) =>
-      setVerses(i).then((data) => (pickedVerses[i] = data))
-    );
-    await Promise.all(promises);
-  };
-
-  const setBooks = async (i: number) => {
-    if (browser && !!pickedModules[i]) {
-      const response = await fetch(`/bibles/${pickedModules[i]}/books.json`);
-      const data = await response.json();
-      return data;
-    }
-    return undefined;
-  };
 
   const setUrlParams = () => {
     let params = new URLSearchParams($page.url.searchParams.toString());
@@ -219,9 +200,6 @@
     }
   };
 
-  let books: BooksData | undefined;
-  $: books = pickedBooks[pickedModules?.indexOf(uiModule)];
-
   $: if (startVerseNumber && !endVerseNumber) {
     endVerseNumber = startVerseNumber;
   }
@@ -236,33 +214,15 @@
     }
   }
 
-  let pickedBooks: (BooksData | undefined)[] = [];
-
-  $: if (!!pickedModules[1]) {
-    pickedModules.forEach((module, i) => {
-      if (!!module) {
-        setBooks(i).then((data) => {
-          pickedBooks[i] = data;
-          pickedBooks = pickedBooks;
-        });
-        setVerses(i).then((data) => {
-          pickedVerses[i] = data;
-          pickedVerses = pickedVerses;
-        });
-      }
-    });
-    //setUrlParams();
-  }
-
   const goToPreviousChapter = () => {
     startVerseNumber = 0;
     endVerseNumber = 0;
-    const previousChapterBook = pickedVerses[0]?.meta?.previous_chapter?.book_number;
-    const previousChapter = pickedVerses[0]?.meta?.previous_chapter?.chapter;
+    const previousChapterBook = versesData[pickedModules[0]]?.meta?.previous_chapter?.book_number;
+    const previousChapter = versesData[pickedModules[0]]?.meta?.previous_chapter?.chapter;
     chapterNumber = 1;
     bookNumber = previousChapterBook ?? bookNumber;
     chapterNumber = previousChapter ?? chapterNumber;
-    setAllVerses();
+    moveToOtherPlace();
     //setUrlParams();
     return undefined;
   };
@@ -270,12 +230,12 @@
   const goToNextChapter = () => {
     startVerseNumber = 0;
     endVerseNumber = 0;
-    const nextChapterBook = pickedVerses[0]?.meta?.next_chapter?.book_number;
-    const nextChapter = pickedVerses[0]?.meta?.next_chapter?.chapter;
+    const nextChapterBook = versesData[pickedModules[0]]?.meta?.next_chapter?.book_number;
+    const nextChapter = versesData[pickedModules[0]]?.meta?.next_chapter?.chapter;
     chapterNumber = 1;
     bookNumber = nextChapterBook ?? bookNumber;
     chapterNumber = nextChapter ?? chapterNumber;
-    setAllVerses();
+    moveToOtherPlace();
     //setUrlParams();
     return undefined;
   };
@@ -285,7 +245,7 @@
     endVerseNumber = 0;
     chapterNumber = 1;
     bookNumber = book_number;
-    setAllVerses();
+    moveToOtherPlace();
     //setUrlParams();
     return undefined;
   };
@@ -294,7 +254,7 @@
     startVerseNumber = 0;
     endVerseNumber = 0;
     chapterNumber = chapter_number;
-    setAllVerses();
+    moveToOtherPlace();
     //setUrlParams();
     return undefined;
   };
@@ -310,8 +270,8 @@
       }}
       class="{buttonClass} rounded-l"
     >
-      {#if books && books.books[bookNumber]}
-        {books.books[bookNumber].short_name}
+      {#if !!booksData[uiModule] && booksData[uiModule]?.books[bookNumber]}
+        {booksData[uiModule].books[bookNumber].short_name}
       {:else}
         {'=='}
       {/if}
@@ -327,14 +287,14 @@
       }}
       class="{buttonClass} rounded-r"
     >
-      {chapterNumber}
+      {chapterNumber ?? ' '}
       <ChevronDown class="ml-2" />
     </button>
     {' '}
 
     <!-- previous chapter -->
     <button
-      disabled={!pickedVerses[0]?.meta?.previous_chapter}
+      disabled={!versesData[pickedModules[0]]?.meta?.previous_chapter}
       on:click={() => goToPreviousChapter()}
       class="{buttonClass} rounded-l"
     >
@@ -343,7 +303,7 @@
 
     <!-- next chapter -->
     <button
-      disabled={!pickedVerses[0]?.meta?.next_chapter}
+      disabled={!versesData[pickedModules[0]]?.meta?.next_chapter}
       on:click={() => goToNextChapter()}
       class="{buttonClass} rounded-r"
     >
@@ -352,8 +312,8 @@
     <!---->
     <!-- <!-- books -->
     <div class={showingBooksDropdown ? 'block' : 'hidden'}>
-      {#if !!books}
-        {#each Object.entries(books.books) as [book_number, book] (book_number)}
+      {#if !!booksData[uiModule]}
+        {#each Object.entries(booksData[uiModule].books) as [book_number, book] (book_number)}
           {#if book.book_number == 470}
             <br class="first:hidden" />
           {/if}
@@ -370,9 +330,9 @@
     </div>
 
     <!-- chapters per book -->
-    {#if !!books?.maxChapters[bookNumber]}
+    {#if !!booksData[uiModule]?.maxChapters[bookNumber]}
       <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
-        {#each Array.from({ length: books.maxChapters[bookNumber].max_chapter }, (_, i) => i + 1) as chapter_number (chapter_number)}
+        {#each Array.from({ length: booksData[uiModule].maxChapters[bookNumber].max_chapter }, (_, i) => i + 1) as chapter_number (chapter_number)}
           <button
             on:click={() => goToChapter(chapter_number)}
             class="bg-gray-600
@@ -420,9 +380,12 @@
     </div>
 
     <article>
-      {#if books && books.books[bookNumber]}
-        <h1>
-          {books.books[bookNumber].long_name}
+      {#if booksData[uiModule]?.books[bookNumber]}
+        <h1 class="text-xl">
+          {booksData[uiModule].books[bookNumber].long_name}
+        </h1>
+        <h2 class="text-lg">
+          {modules_obj[uiModule].info.chapter_string}
           {chapterNumber}
           {#if startVerseNumber}
             : {startVerseNumber}
@@ -439,51 +402,51 @@
               <ChevronRight />
             </button>
           {/if}
-        </h1>
+        </h2>
       {/if}
 
-      <p id="content-top">
-        {#if !!pickedVerses[0]}
-          {#each Object.entries(pickedVerses[0]?.chapter) as [verseNumber, verse] (verseNumber)}
-            {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
-              {#if !pickedModules[1]}
-                <sup>{verse.verse}</sup>
+      <section class="my-3">
+        <p id="content-top">
+          {#if !!versesData[pickedModules[0]]}
+            {#each Object.entries(versesData[pickedModules[0]]?.chapter) as [verseNumber, verse] (verseNumber)}
+              {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
+                {#if !pickedModules[1]}
+                  <sup>{verse.verse}</sup>
 
-                {#if pickedModules[0].includes('+')}
-                  <VerseText data={verse.text} />
+                  {#if pickedModules[0].includes('+')}
+                    <VerseText data={verse.text} />
+                  {:else}
+                    <span>{verse.text}</span> {' '}
+                  {/if}
                 {:else}
-                  <span>{verse.text}</span> {' '}
-                {/if}
-              {:else}
-                <div class="flex">
-                  <div class="flex py-2">{verse.verse}</div>
+                  <div class="flex">
+                    <div class="flex py-2">{verse.verse}</div>
 
-                  {#each pickedModules.filter((module) => !!module) as _, moduleNumber (moduleNumber)}
-                    <div class="flex-1 p-2">
-                      {#if !!pickedVerses[moduleNumber]?.chapter[verse.verse]}
-                        {#if pickedModules[moduleNumber].includes('+')}
-                          <VerseText
-                            data={pickedVerses[moduleNumber]?.chapter[verse.verse]?.text}
-                          />
-                        {:else}
-                          <span>{pickedVerses[moduleNumber]?.chapter[verse.verse]?.text}</span>
-                          {' '}
+                    {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
+                      <div class="flex-1 p-2">
+                        {#if !!versesData[module]?.chapter[verse.verse]}
+                          {#if pickedModules[moduleNumber].includes('+')}
+                            <VerseText data={versesData[module]?.chapter[verse.verse]?.text} />
+                          {:else}
+                            <span>{versesData[module]?.chapter[verse.verse]?.text}</span>
+                            {' '}
+                          {/if}
                         {/if}
-                      {/if}
-                    </div>
-                  {/each}
-                </div>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
               {/if}
-            {/if}
-          {/each}
-        {/if}
-      </p>
+            {/each}
+          {/if}
+        </p>
+      </section>
     </article>
 
     <!-- previous chapter -->
     <a href="#content-top">
       <button
-        disabled={!pickedVerses[0]?.meta?.previous_chapter}
+        disabled={!versesData[pickedModules[0]]?.meta?.previous_chapter}
         on:click={() => goToPreviousChapter}
         class="{buttonClass} rounded-l"
       >
@@ -494,7 +457,7 @@
     <!-- next chapter -->
     <a href="#content-top">
       <button
-        disabled={!pickedVerses[0]?.meta?.next_chapter}
+        disabled={!versesData[pickedModules[0]]?.meta?.next_chapter}
         on:click={() => goToNextChapter}
         class="{buttonClass} rounded-r"
       >
