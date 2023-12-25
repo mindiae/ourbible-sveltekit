@@ -149,6 +149,9 @@
         .then((data) => {
           booksData[module] = data;
           booksData = booksData;
+          if (Object.keys(modules_obj).slice(-1)[0] === module) {
+            setUrlParams();
+          }
         });
 
       fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
@@ -156,6 +159,9 @@
         .then((data) => {
           versesData[module] = data;
           versesData = versesData;
+          if (Object.keys(modules_obj).slice(-1)[0] === module) {
+            setUrlParams();
+          }
         });
     }
   };
@@ -228,6 +234,10 @@
     showingAddModuleDropdown = false;
   }
 
+  $: if (pickedModules.filter((module) => !!module)) {
+    setUrlParams();
+  }
+
   const goToPreviousChapter = () => {
     startVerseNumber = 0;
     endVerseNumber = 0;
@@ -237,7 +247,6 @@
     bookNumber = previousChapterBook ?? bookNumber;
     chapterNumber = previousChapter ?? chapterNumber;
     moveToOtherPlace();
-    //setUrlParams();
     return undefined;
   };
 
@@ -250,7 +259,6 @@
     bookNumber = nextChapterBook ?? bookNumber;
     chapterNumber = nextChapter ?? chapterNumber;
     moveToOtherPlace();
-    //setUrlParams();
     return undefined;
   };
 
@@ -260,7 +268,6 @@
     chapterNumber = 1;
     bookNumber = book_number;
     moveToOtherPlace();
-    //setUrlParams();
     return undefined;
   };
 
@@ -269,7 +276,6 @@
     endVerseNumber = 0;
     chapterNumber = chapter_number;
     moveToOtherPlace();
-    //setUrlParams();
     return undefined;
   };
 </script>
