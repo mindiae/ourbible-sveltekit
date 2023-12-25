@@ -7,6 +7,7 @@
   import ChevronRight from './ChevronRight.svelte';
   import VerseText from './VerseText.svelte';
   import Xmark from './Xmark.svelte';
+  import Plus from './Plus.svelte';
 
   type BibleModuleInfo = {
     description: string;
@@ -339,7 +340,7 @@
             }}
             class="{buttonClass} rounded"
           >
-            +
+            <Plus />
             <ChevronDown class="ml-2" />
           </button>
         {:else if pickedModules.filter((module) => !!module).length > 1}
