@@ -489,10 +489,8 @@
           {#each Object.entries(versesData[pickedModules[0]]?.chapter) as [verseNumber, verse] (verseNumber)}
             {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
               {#if !pickedModules[1]}
-                <sup>{verse.verse}</sup>
-
-                {#if pickedModules[0].includes('+')}
-                  <VerseText data={verse.text} />
+                {#if verse.verse !== 1}{' '}{/if}<sup>{verse.verse}</sup
+                >{#if pickedModules[0].includes('+')}<VerseText data={verse.text} />
                 {:else}
                   <span>{verse.text}</span> {' '}
                 {/if}
