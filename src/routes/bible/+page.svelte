@@ -6,6 +6,7 @@
   import ChevronLeft from './ChevronLeft.svelte';
   import ChevronRight from './ChevronRight.svelte';
   import VerseText from './VerseText.svelte';
+  import { each } from 'svelte/internal';
 
   type BibleModuleInfo = {
     description: string;
@@ -138,22 +139,30 @@
     endVerseNumber = parseInt(tmpEndveVerseNumber);
 
     moveToOtherPlace();
+    pickedModules = pickedModules;
   });
 
-  const moveToOtherPlace = async () => {
-    for (let [module, _] of Object.entries(modules_obj)) {
-      const vresponse = await fetch(`/bibles/${module}/books.json`);
-      booksData[module] = await vresponse.json();
+  const moveToOtherPlace = () => {
+    for (let module of Object.keys(modules_obj)) {
+      fetch(`/bibles/${module}/books.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          booksData[module] = data;
+          booksData = booksData;
+        });
 
-      const bresponse = await fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`);
-      versesData[module] = await bresponse.json();
+      fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          versesData[module] = data;
+          versesData = versesData;
+        });
     }
-    booksData = booksData;
-    versesData = versesData;
   };
 
   let showingBooksDropdown = false;
   let showingChaptersDropdown = false;
+  let showingModulesDropdown = false;
 
   const buttonClass =
     'inline-flex bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 shadow align-middle leading-[1em] disabled:opacity-50';
@@ -261,36 +270,182 @@
 </script>
 
 <div>
-  <div>
-    <!-- show books toggle -->
-    <button
-      on:click={() => {
-        showingBooksDropdown = !showingBooksDropdown;
-        showingChaptersDropdown = false;
-      }}
-      class="{buttonClass} rounded-l"
-    >
-      {#if !!booksData[uiModule] && booksData[uiModule]?.books[bookNumber]}
-        {booksData[uiModule].books[bookNumber].short_name}
-      {:else}
-        {'=='}
+  <div class="flex">
+    {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
+      <div class="flex-1 py-2">
+        <button
+          on:click={() => {
+            showingModulesDropdown = !showingModulesDropdown;
+            uiModule = module;
+            showingChaptersDropdown = false;
+            showingBooksDropdown = false;
+          }}
+          class="{buttonClass} rounded-l"
+        >
+          {#if !!modules_obj}
+            {module}
+          {/if}
+          <ChevronDown class="ml-2" />
+        </button>
+
+        <!-- show books toggle -->
+        <button
+          on:click={() => {
+            showingBooksDropdown = !showingBooksDropdown;
+            uiModule = module;
+            showingChaptersDropdown = false;
+            showingModulesDropdown = false;
+          }}
+          class={buttonClass}
+        >
+          {#if !!booksData[module] && booksData[module]?.books[bookNumber]}
+            {booksData[module].books[bookNumber].short_name}
+          {:else}
+            {'=='}
+          {/if}
+
+          <ChevronDown class="ml-2" />
+        </button>
+
+        <!-- show chapters toggle -->
+        <button
+          on:click={() => {
+            showingChaptersDropdown = !showingChaptersDropdown;
+            showingModulesDropdown = false;
+            uiModule = module;
+            showingBooksDropdown = false;
+          }}
+          class="{buttonClass} rounded-r"
+        >
+          {chapterNumber ?? ' '}
+          <ChevronDown class="ml-2" />
+        </button>
+        {' '}
+      </div>
+    {/each}
+  </div>
+
+  {#if showingModulesDropdown}
+    <ul class="flex flex-col border rounded-l my-1">
+      {#each Object.entries(modules_obj).filter(([name]) => !pickedModules.includes(name)) as [moduleName, module] (moduleName)}
+        {#if !pickedModules.includes(moduleName)}
+          <li>
+            <button
+              on:click={() => {
+                pickedModules[pickedModules.indexOf(uiModule)] = moduleName;
+                pickedModules = pickedModules;
+              }}
+              class="{buttonClass} rounded-md w-full"
+            >
+              {moduleName}
+              {module.info.description}
+            </button>
+          </li>
+        {/if}
+      {/each}
+    </ul>
+  {/if}
+
+  <!-- books -->
+  <div class={showingBooksDropdown ? 'block' : 'hidden'}>
+    {#if !!booksData[uiModule]}
+      {#each Object.entries(booksData[uiModule].books) as [book_number, book] (book_number)}
+        {#if book.book_number == 470}
+          <br class="first:hidden" />
+        {/if}
+        <button
+          on:click={() => goToBook(book.book_number)}
+          class="border rounded px-2 disabled:font-bold"
+          style="background-color: {book.book_color};"
+          disabled={book.book_number == bookNumber}
+        >
+          {book.short_name}
+        </button>
+      {/each}
+    {/if}
+  </div>
+
+  <!-- chapters per book -->
+  {#if !!booksData[uiModule]?.maxChapters[bookNumber]}
+    <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
+      {#each Array.from({ length: booksData[uiModule].maxChapters[bookNumber].max_chapter }, (_, i) => i + 1) as chapter_number (chapter_number)}
+        <button
+          on:click={() => goToChapter(chapter_number)}
+          class="bg-gray-600
+               disabled:bg-gray-900
+               text-white border
+               rounded px-2"
+          disabled={chapter_number == chapterNumber}
+        >
+          {chapter_number}
+        </button>
+      {/each}
+    </div>
+  {/if}
+
+  <!-- menu language -->
+  <div class="mt-2">
+    {#each pickedModules as pickedModule, key (key)}
+      {#if !!pickedModule}
+        <button class="border rounded px-2">
+          <label>
+            {pickedModule}
+            <input type="radio" value={pickedModule} bind:group={uiModule} />
+          </label>
+        </button>
       {/if}
+    {/each}
+  </div>
 
-      <ChevronDown class="ml-2" />
-    </button>
+  <div class="mb-2">
+    {#if modules_obj}
+      {#each Object.entries(modules_obj) as [module, _] (module)}
+        <button class="rounded border px-2">
+          <label>
+            {module}
+            <input
+              type="checkbox"
+              bind:group={pickedModules}
+              value={module}
+              disabled={pickedModules.length > 2 && !pickedModules.includes(module)}
+            />
+          </label>
+        </button>
+      {/each}
+    {/if}
+  </div>
 
-    <!-- show chapters toggle -->
-    <button
-      on:click={() => {
-        showingChaptersDropdown = !showingChaptersDropdown;
-        showingBooksDropdown = false;
-      }}
-      class="{buttonClass} rounded-r"
-    >
-      {chapterNumber ?? ' '}
-      <ChevronDown class="ml-2" />
-    </button>
-    {' '}
+  <article>
+    <div class="flex">
+      {#each pickedModules.filter((module) => !!module) as module (module)}
+        <div class="flex-1">
+          {#if booksData[module]?.books[bookNumber]}
+            <h1 class="text-xl">
+              {booksData[module].books[bookNumber].long_name}
+            </h1>
+            <h2 class="text-lg">
+              {modules_obj[module].info.chapter_string}
+              {chapterNumber}
+              {#if startVerseNumber}
+                : {startVerseNumber}
+                {#if startVerseNumber != endVerseNumber}
+                  -{endVerseNumber}
+                {/if}
+                <button
+                  class="rounded text-sm"
+                  on:click={() => {
+                    startVerseNumber = 0;
+                    endVerseNumber = 0;
+                  }}
+                >
+                  <ChevronRight />
+                </button>
+              {/if}
+            </h2>
+          {/if}
+        </div>
+      {/each}
+    </div>
 
     <!-- previous chapter -->
     <button
@@ -309,160 +464,64 @@
     >
       <ChevronRight />
     </button>
-    <!---->
-    <!-- <!-- books -->
-    <div class={showingBooksDropdown ? 'block' : 'hidden'}>
-      {#if !!booksData[uiModule]}
-        {#each Object.entries(booksData[uiModule].books) as [book_number, book] (book_number)}
-          {#if book.book_number == 470}
-            <br class="first:hidden" />
-          {/if}
-          <button
-            on:click={() => goToBook(book.book_number)}
-            class="border rounded px-2 disabled:font-bold"
-            style="background-color: {book.book_color};"
-            disabled={book.book_number == bookNumber}
-          >
-            {book.short_name}
-          </button>
-        {/each}
-      {/if}
-    </div>
 
-    <!-- chapters per book -->
-    {#if !!booksData[uiModule]?.maxChapters[bookNumber]}
-      <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
-        {#each Array.from({ length: booksData[uiModule].maxChapters[bookNumber].max_chapter }, (_, i) => i + 1) as chapter_number (chapter_number)}
-          <button
-            on:click={() => goToChapter(chapter_number)}
-            class="bg-gray-600
-               disabled:bg-gray-900
-               text-white border
-               rounded px-2"
-            disabled={chapter_number == chapterNumber}
-          >
-            {chapter_number}
-          </button>
-        {/each}
-      </div>
-    {/if}
+    <section class="my-3">
+      <p id="content-top">
+        {#if !!versesData[pickedModules[0]]}
+          {#each Object.entries(versesData[pickedModules[0]]?.chapter) as [verseNumber, verse] (verseNumber)}
+            {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
+              {#if !pickedModules[1]}
+                <sup>{verse.verse}</sup>
 
-    <!-- menu language -->
-    <div class="mt-2">
-      {#each pickedModules as pickedModule, key (key)}
-        {#if !!pickedModule}
-          <button class="border rounded px-2">
-            <label>
-              {pickedModule}
-              <input type="radio" value={pickedModule} bind:group={uiModule} />
-            </label>
-          </button>
-        {/if}
-      {/each}
-    </div>
-
-    <div class="mb-2">
-      {#if modules_obj}
-        {#each Object.entries(modules_obj) as [module, val] (module)}
-          <button class="rounded border px-2">
-            <label>
-              {module}
-              <input
-                type="checkbox"
-                bind:group={pickedModules}
-                value={module}
-                disabled={pickedModules.length > 2 && !pickedModules.includes(module)}
-              />
-            </label>
-          </button>
-        {/each}
-      {/if}
-    </div>
-
-    <article>
-      {#if booksData[uiModule]?.books[bookNumber]}
-        <h1 class="text-xl">
-          {booksData[uiModule].books[bookNumber].long_name}
-        </h1>
-        <h2 class="text-lg">
-          {modules_obj[uiModule].info.chapter_string}
-          {chapterNumber}
-          {#if startVerseNumber}
-            : {startVerseNumber}
-            {#if startVerseNumber != endVerseNumber}
-              -{endVerseNumber}
-            {/if}
-            <button
-              class="rounded text-sm"
-              on:click={() => {
-                startVerseNumber = 0;
-                endVerseNumber = 0;
-              }}
-            >
-              <ChevronRight />
-            </button>
-          {/if}
-        </h2>
-      {/if}
-
-      <section class="my-3">
-        <p id="content-top">
-          {#if !!versesData[pickedModules[0]]}
-            {#each Object.entries(versesData[pickedModules[0]]?.chapter) as [verseNumber, verse] (verseNumber)}
-              {#if !startVerseNumber || (startVerseNumber <= verse.verse && endVerseNumber >= verse.verse)}
-                {#if !pickedModules[1]}
-                  <sup>{verse.verse}</sup>
-
-                  {#if pickedModules[0].includes('+')}
-                    <VerseText data={verse.text} />
-                  {:else}
-                    <span>{verse.text}</span> {' '}
-                  {/if}
+                {#if pickedModules[0].includes('+')}
+                  <VerseText data={verse.text} />
                 {:else}
-                  <div class="flex">
-                    <div class="flex py-2">{verse.verse}</div>
-
-                    {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
-                      <div class="flex-1 p-2">
-                        {#if !!versesData[module]?.chapter[verse.verse]}
-                          {#if pickedModules[moduleNumber].includes('+')}
-                            <VerseText data={versesData[module]?.chapter[verse.verse]?.text} />
-                          {:else}
-                            <span>{versesData[module]?.chapter[verse.verse]?.text}</span>
-                            {' '}
-                          {/if}
-                        {/if}
-                      </div>
-                    {/each}
-                  </div>
+                  <span>{verse.text}</span> {' '}
                 {/if}
+              {:else}
+                <div class="flex">
+                  <div class="flex py-2">{verse.verse}</div>
+
+                  {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
+                    <div class="flex-1 p-2">
+                      {#if !!versesData[module]?.chapter[verse.verse]}
+                        {#if module.includes('+')}
+                          <VerseText data={versesData[module]?.chapter[verse.verse]?.text} />
+                        {:else}
+                          <span>{versesData[module]?.chapter[verse.verse]?.text}</span>
+                          {' '}
+                        {/if}
+                      {/if}
+                    </div>
+                  {/each}
+                </div>
               {/if}
-            {/each}
-          {/if}
-        </p>
-      </section>
-    </article>
+            {/if}
+          {/each}
+        {/if}
+      </p>
+    </section>
+  </article>
 
-    <!-- previous chapter -->
-    <a href="#content-top">
-      <button
-        disabled={!versesData[pickedModules[0]]?.meta?.previous_chapter}
-        on:click={() => goToPreviousChapter}
-        class="{buttonClass} rounded-l"
-      >
-        <ChevronLeft />
-      </button>
-    </a>
+  <!-- previous chapter -->
+  <a href="#content-top">
+    <button
+      disabled={!versesData[pickedModules[0]]?.meta?.previous_chapter}
+      on:click={() => goToPreviousChapter()}
+      class="{buttonClass} rounded-l"
+    >
+      <ChevronLeft />
+    </button>
+  </a>
 
-    <!-- next chapter -->
-    <a href="#content-top">
-      <button
-        disabled={!versesData[pickedModules[0]]?.meta?.next_chapter}
-        on:click={() => goToNextChapter}
-        class="{buttonClass} rounded-r"
-      >
-        <ChevronRight />
-      </button>
-    </a>
-  </div>
+  <!-- next chapter -->
+  <a href="#content-top">
+    <button
+      disabled={!versesData[pickedModules[0]]?.meta?.next_chapter}
+      on:click={() => goToNextChapter()}
+      class="{buttonClass} rounded-r"
+    >
+      <ChevronRight />
+    </button>
+  </a>
 </div>

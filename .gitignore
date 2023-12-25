@@ -3,6 +3,7 @@ node_modules
 /build
 /.svelte-kit
 /package
+/static/bibles/*
 .env
 .env.*
 !.env.example
