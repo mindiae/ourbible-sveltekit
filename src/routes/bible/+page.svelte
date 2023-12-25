@@ -6,7 +6,7 @@
   import ChevronLeft from './ChevronLeft.svelte';
   import ChevronRight from './ChevronRight.svelte';
   import VerseText from './VerseText.svelte';
-  import { each } from 'svelte/internal';
+  import Xmark from './Xmark.svelte';
 
   type BibleModuleInfo = {
     description: string;
@@ -163,6 +163,7 @@
   let showingBooksDropdown = false;
   let showingChaptersDropdown = false;
   let showingModulesDropdown = false;
+  let showingAddModuleDropdown = false;
 
   const buttonClass =
     'inline-flex bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 shadow align-middle leading-[1em] disabled:opacity-50';
@@ -223,6 +224,10 @@
     }
   }
 
+  $: if (!!pickedModules[2]) {
+    showingAddModuleDropdown = false;
+  }
+
   const goToPreviousChapter = () => {
     startVerseNumber = 0;
     endVerseNumber = 0;
@@ -275,10 +280,11 @@
       <div class="flex-1 py-2">
         <button
           on:click={() => {
-            showingModulesDropdown = !showingModulesDropdown;
             uiModule = module;
             showingChaptersDropdown = false;
             showingBooksDropdown = false;
+            showingAddModuleDropdown = false;
+            showingModulesDropdown = !showingModulesDropdown;
           }}
           class="{buttonClass} rounded-l"
         >
@@ -291,10 +297,11 @@
         <!-- show books toggle -->
         <button
           on:click={() => {
-            showingBooksDropdown = !showingBooksDropdown;
             uiModule = module;
             showingChaptersDropdown = false;
             showingModulesDropdown = false;
+            showingAddModuleDropdown = false;
+            showingBooksDropdown = !showingBooksDropdown;
           }}
           class={buttonClass}
         >
@@ -310,17 +317,43 @@
         <!-- show chapters toggle -->
         <button
           on:click={() => {
-            showingChaptersDropdown = !showingChaptersDropdown;
-            showingModulesDropdown = false;
             uiModule = module;
+            showingAddModuleDropdown = false;
+            showingModulesDropdown = false;
             showingBooksDropdown = false;
+            showingChaptersDropdown = !showingChaptersDropdown;
           }}
           class="{buttonClass} rounded-r"
         >
           {chapterNumber ?? ' '}
           <ChevronDown class="ml-2" />
         </button>
-        {' '}
+
+        {#if pickedModules.filter((module) => !!module).slice(-1)[0] == module && !pickedModules[2]}
+          <button
+            on:click={() => {
+              showingBooksDropdown = false;
+              showingChaptersDropdown = false;
+              showingModulesDropdown = false;
+              showingAddModuleDropdown = !showingAddModuleDropdown;
+            }}
+            class="{buttonClass} rounded"
+          >
+            +
+            <ChevronDown class="ml-2" />
+          </button>
+        {:else if pickedModules.filter((module) => !!module).length > 1}
+          <button
+            on:click={() => {
+              pickedModules.splice(pickedModules.indexOf(module), 1);
+              pickedModules.push('');
+              pickedModules = pickedModules;
+            }}
+            class="{buttonClass} rounded"
+          >
+            <Xmark />
+          </button>
+        {/if}
       </div>
     {/each}
   </div>
@@ -328,20 +361,37 @@
   {#if showingModulesDropdown}
     <ul class="flex flex-col border rounded-l my-1">
       {#each Object.entries(modules_obj).filter(([name]) => !pickedModules.includes(name)) as [moduleName, module] (moduleName)}
-        {#if !pickedModules.includes(moduleName)}
-          <li>
-            <button
-              on:click={() => {
-                pickedModules[pickedModules.indexOf(uiModule)] = moduleName;
-                pickedModules = pickedModules;
-              }}
-              class="{buttonClass} rounded-md w-full"
-            >
-              {moduleName}
-              {module.info.description}
-            </button>
-          </li>
-        {/if}
+        <li>
+          <button
+            on:click={() => {
+              pickedModules[pickedModules.indexOf(uiModule)] = moduleName;
+              pickedModules = pickedModules;
+            }}
+            class="{buttonClass} rounded-md w-full"
+          >
+            {moduleName}
+            {module.info.description}
+          </button>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+
+  {#if showingAddModuleDropdown && !pickedModules[2]}
+    <ul class="flex flex-col border rounded-l my-1">
+      {#each Object.entries(modules_obj).filter(([name]) => !pickedModules.includes(name)) as [moduleName, module] (moduleName)}
+        <li>
+          <button
+            on:click={() => {
+              pickedModules[pickedModules.indexOf('')] = moduleName;
+              pickedModules = pickedModules;
+            }}
+            class="{buttonClass} rounded-md w-full"
+          >
+            {moduleName}
+            {module.info.description}
+          </button>
+        </li>
       {/each}
     </ul>
   {/if}
@@ -382,38 +432,6 @@
       {/each}
     </div>
   {/if}
-
-  <!-- menu language -->
-  <div class="mt-2">
-    {#each pickedModules as pickedModule, key (key)}
-      {#if !!pickedModule}
-        <button class="border rounded px-2">
-          <label>
-            {pickedModule}
-            <input type="radio" value={pickedModule} bind:group={uiModule} />
-          </label>
-        </button>
-      {/if}
-    {/each}
-  </div>
-
-  <div class="mb-2">
-    {#if modules_obj}
-      {#each Object.entries(modules_obj) as [module, _] (module)}
-        <button class="rounded border px-2">
-          <label>
-            {module}
-            <input
-              type="checkbox"
-              bind:group={pickedModules}
-              value={module}
-              disabled={pickedModules.length > 2 && !pickedModules.includes(module)}
-            />
-          </label>
-        </button>
-      {/each}
-    {/if}
-  </div>
 
   <article>
     <div class="flex">
