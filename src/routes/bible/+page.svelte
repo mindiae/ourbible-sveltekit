@@ -119,20 +119,17 @@
 
   const moveToOtherPlace = () => {
     for (let module of Object.keys(modules_obj)) {
-      fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          versesData[module] = data;
-          versesData = versesData;
-          if (Object.keys(modules_obj).slice(-1)[0] === module) {
-            setUrlParams();
-          }
-        })
-        .catch((err) => {
-          versesData[module] = '';
-          versesData = versesData;
-          console.error(err);
-        });
+      if (!!modules_obj[module].books[bookNumber]) {
+        fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
+          .then((response) => response.json())
+          .then((data) => {
+            versesData[module] = data;
+            versesData = versesData;
+            if (Object.keys(modules_obj).slice(-1)[0] === module) {
+              setUrlParams();
+            }
+          });
+      }
     }
   };
 
@@ -392,7 +389,7 @@
   </div>
 
   <!-- chapters per book -->
-  {#if !!modules_obj && !!modules_obj[uiModule]?.books[bookNumber][0]}
+  {#if !!modules_obj && !!modules_obj[uiModule]?.books[bookNumber]}
     <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
       {#each Array.from({ length: modules_obj[uiModule].books[bookNumber][0] }, (_, i) => i + 1) as chapter_number (chapter_number)}
         <button
@@ -476,13 +473,16 @@
 
                   {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
                     <div class="flex-1 p-2">
-                      {#if !!versesData[module] && !!versesData[module]?.chapter[verse.verse]}
+                      {#if !!versesData[module] && !!versesData[module]?.chapter[verse.verse] && !!modules_obj[module].books[bookNumber]}
                         {#if module.includes('+')}
                           <VerseText data={versesData[module]?.chapter[verse.verse]?.text} />
                         {:else}
                           <span>{versesData[module]?.chapter[verse.verse]?.text}</span>
                           {' '}
                         {/if}
+                      {:else}
+                        The current Bible Module ({module}) does not contain verses for the selected
+                        book. Please select another book using book selection button.
                       {/if}
                     </div>
                   {/each}
