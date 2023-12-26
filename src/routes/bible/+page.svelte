@@ -22,7 +22,7 @@
   };
 
   type BibleModuleBooks = {
-    [bookNumber: string]: number;
+    [bookNumber: string]: [number, string, string, string];
   };
 
   type BibleModule = {
@@ -63,36 +63,11 @@
     meta: Meta;
   }
 
-  interface Book {
-    book_color: string;
-    book_number: number;
-    short_name: string;
-    long_name: string;
-  }
-
-  interface Books {
-    [key: string]: Book;
-  }
-
-  interface MaxChapter {
-    book_number: number;
-    max_chapter: number;
-  }
-
-  interface MaxChapters {
-    [key: string]: MaxChapter;
-  }
-
-  interface BooksData {
-    books: Books;
-    maxChapters: MaxChapters;
-  }
   const urlParams = $page.url.searchParams;
 
   let default_module = 'NTPT+';
   let modules_obj: BibleModules;
   let uiModule: string;
-  let booksData: { [books: string]: BooksData } = {};
   let versesData: { [verses: string]: Data } = {};
   let pickedModules = [default_module, '', ''];
   let bookNumber: number;
@@ -127,7 +102,7 @@
     chapterNumber =
       modules_obj &&
       Array.from(
-        { length: modules_obj[uiModule].books[parseInt(tmpBookNumber)] },
+        { length: modules_obj[uiModule].books[parseInt(tmpBookNumber)][0] },
         (_, i) => i + 1
       ).includes(parseInt(tmpChapterNumber))
         ? parseInt(tmpChapterNumber)
@@ -144,16 +119,6 @@
 
   const moveToOtherPlace = () => {
     for (let module of Object.keys(modules_obj)) {
-      fetch(`/bibles/${module}/books.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          booksData[module] = data;
-          booksData = booksData;
-          if (Object.keys(modules_obj).slice(-1)[0] === module) {
-            setUrlParams();
-          }
-        });
-
       fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
         .then((response) => response.json())
         .then((data) => {
@@ -311,8 +276,8 @@
           }}
           class={buttonClass}
         >
-          {#if !!booksData[module] && booksData[module]?.books[bookNumber]}
-            {booksData[module].books[bookNumber].short_name}
+          {#if !!modules_obj && modules_obj[module]?.books[bookNumber]}
+            {modules_obj[module].books[bookNumber][2]}
           {:else}
             {'=='}
           {/if}
@@ -404,27 +369,27 @@
 
   <!-- books -->
   <div class={showingBooksDropdown ? 'block' : 'hidden'}>
-    {#if !!booksData[uiModule]}
-      {#each Object.entries(booksData[uiModule].books) as [book_number, book] (book_number)}
-        {#if book.book_number == 470}
+    {#if !!modules_obj && !!modules_obj[uiModule]}
+      {#each Object.entries(modules_obj[uiModule].books) as [book_number, book] (book_number)}
+        {#if parseInt(book_number) == 470}
           <br class="first:hidden" />
         {/if}
         <button
-          on:click={() => goToBook(book.book_number)}
+          on:click={() => goToBook(parseInt(book_number))}
           class="border rounded px-2 disabled:font-bold"
-          style="background-color: {book.book_color};"
-          disabled={book.book_number == bookNumber}
+          style="background-color: {book[1]};"
+          disabled={parseInt(book_number) === bookNumber}
         >
-          {book.short_name}
+          {book[2]}
         </button>
       {/each}
     {/if}
   </div>
 
   <!-- chapters per book -->
-  {#if !!booksData[uiModule]?.maxChapters[bookNumber]}
+  {#if !!modules_obj && !!modules_obj[uiModule]?.books[bookNumber][0]}
     <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
-      {#each Array.from({ length: booksData[uiModule].maxChapters[bookNumber].max_chapter }, (_, i) => i + 1) as chapter_number (chapter_number)}
+      {#each Array.from({ length: modules_obj[uiModule].books[bookNumber][0] }, (_, i) => i + 1) as chapter_number (chapter_number)}
         <button
           on:click={() => goToChapter(chapter_number)}
           class="bg-gray-600
@@ -443,9 +408,9 @@
     <div class="flex">
       {#each pickedModules.filter((module) => !!module) as module (module)}
         <div class="flex-1">
-          {#if booksData[module]?.books[bookNumber]}
+          {#if !!modules_obj && modules_obj[module]?.books[bookNumber]}
             <h1 class="text-xl">
-              {booksData[module].books[bookNumber].long_name}
+              {modules_obj[module].books[bookNumber][3]}
             </h1>
             <h2 class="text-lg">
               {modules_obj[module].info.chapter_string}

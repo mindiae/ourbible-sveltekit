@@ -1,7 +1,6 @@
 'use strict';
 import Database from 'better-sqlite3';
 import { readdirSync, writeFileSync } from 'node:fs';
-import makeBooks from './makeBooksJson.js';
 import makeChapters from './makeChaptersJson.js';
 
 type Info = {
@@ -18,8 +17,15 @@ type Book = {
   max_chapter: number;
 };
 
+type BooksTable = {
+  book_number: number;
+  book_color: string;
+  short_name: string;
+  long_name: string;
+};
+
 type BooksObj = {
-  [bookNumber: number]: number;
+  [bookNumber: number]: number[];
 };
 
 const infoData = readdirSync('static/media/')
@@ -40,25 +46,33 @@ const infoData = readdirSync('static/media/')
         const { name, value } = currentValue as Info;
         return { ...infoObj, [name]: value };
       }, {}),
-      books: (
-        bibleDb
-          .prepare(
-            `SELECT book_number, max(chapter) as max_chapter
+      books: bibleDb
+        .prepare(
+          `SELECT book_number, max(chapter) as max_chapter
           FROM verses
           WHERE verse= 1
           GROUP BY book_number`
-          )
-          .all() as Book[]
-      ).reduce<BooksObj>((accumulator: BooksObj, book: Book): BooksObj => {
-        return { ...accumulator, [book.book_number]: book.max_chapter };
-      }, {})
+        )
+        .all() as Book[],
+      booksTable: bibleDb.prepare(`SELECT * FROM books`).all() as BooksTable[]
     };
   })
   .reduce((accumulator, module) => {
-    makeBooks(module);
     makeChapters(module);
 
-    return { ...accumulator, [module.moduleName]: { info: module.info, books: module.books } };
+    const books = module.books.reduce((accumulator, book, index) => {
+      return {
+        ...accumulator,
+        [book.book_number]: [
+          book.max_chapter,
+          module.booksTable[index].book_color,
+          module.booksTable[index].short_name,
+          module.booksTable[index].long_name
+        ]
+      };
+    }, {});
+
+    return { ...accumulator, [module.moduleName]: { info: module.info, books } };
   }, {});
 
 writeFileSync('static/bibles/modules.json', JSON.stringify(infoData));
