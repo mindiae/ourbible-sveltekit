@@ -127,6 +127,11 @@
           if (Object.keys(modules_obj).slice(-1)[0] === module) {
             setUrlParams();
           }
+        })
+        .catch((err) => {
+          versesData[module] = '';
+          versesData = versesData;
+          console.error(err);
         });
     }
   };
@@ -471,7 +476,7 @@
 
                   {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
                     <div class="flex-1 p-2">
-                      {#if !!versesData[module]?.chapter[verse.verse]}
+                      {#if !!versesData[module] && !!versesData[module]?.chapter[verse.verse]}
                         {#if module.includes('+')}
                           <VerseText data={versesData[module]?.chapter[verse.verse]?.text} />
                         {:else}
