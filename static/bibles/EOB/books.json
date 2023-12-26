@@ -1,1 +1,195 @@
-{"books":{"470":{"book_color":"#ff6600","book_number":470,"short_name":"Mat","long_name":"(ACCORDING TO) MATTHEW  (ΚΑΤΑ ΜΑΤΘΑΙΟΝ)"},"480":{"book_color":"#ff6600","book_number":480,"short_name":"Mar","long_name":"(ACCORDING TO) MARK   (ΚΑΤΑ ΜΑΡΚΟΝ)"},"490":{"book_color":"#ff6600","book_number":490,"short_name":"Luk","long_name":"(ACCORDING TO) LUKE   (ΚΑΤΑ ΛΟΥΚΑΝ)"},"500":{"book_color":"#ff6600","book_number":500,"short_name":"John","long_name":"(ACCORDING TO) JOHN   (ΚΑΤΑ ΙΩΑΝΝΗΝ)"},"510":{"book_color":"#00ffff","book_number":510,"short_name":"Acts","long_name":"ACTS OF THE APOSTLES   (ΠΡΑΞΕΙΣ ΤΩΝ ΑΠΟΣΤΟΛΩΝ)"},"520":{"book_color":"#ffff00","book_number":520,"short_name":"Rom","long_name":"Romans   (ΠΡΟΣ ΡΩΜΑΙΟΥΣ)"},"530":{"book_color":"#ffff00","book_number":530,"short_name":"1Cor","long_name":"1 Corinthians   (ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Α)"},"540":{"book_color":"#ffff00","book_number":540,"short_name":"2Cor","long_name":"2 Corinthians   (ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Β)"},"550":{"book_color":"#ffff00","book_number":550,"short_name":"Gal","long_name":"Galatians   (ΠΡΟΣ ΓΑΛΑΤΑΣ)"},"560":{"book_color":"#ffff00","book_number":560,"short_name":"Eph","long_name":"Ephesians   (ΠΡΟΣ ΕΦΕΣΙΟΥΣ)"},"570":{"book_color":"#ffff00","book_number":570,"short_name":"Phil","long_name":"Philippians   (ΠΡΟΣ ΦΙΛΙΠΠΗΣΙΟΥΣ)"},"580":{"book_color":"#ffff00","book_number":580,"short_name":"Col","long_name":"Colossians   (ΠΡΟΣ ΚΟΛOΣΣΑΕΙΣ)"},"590":{"book_color":"#ffff00","book_number":590,"short_name":"1Ths","long_name":"1 Thessalonians   (ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Α)"},"600":{"book_color":"#ffff00","book_number":600,"short_name":"2Ths","long_name":"2 Thessalonians   (ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Β)"},"610":{"book_color":"#ffff00","book_number":610,"short_name":"1Tim","long_name":"1 Timothy   (ΠΡΟΣ ΤΙΜΟΘΕΟΝ Α)"},"620":{"book_color":"#ffff00","book_number":620,"short_name":"2Tim","long_name":"2 Timothy   (ΠΡΟΣ ΤΙΜΟΘΕΟΝ B)"},"630":{"book_color":"#ffff00","book_number":630,"short_name":"Tit","long_name":"Titus   (ΠΡΟΣ ΤΙΤΟΝ)"},"640":{"book_color":"#ffff00","book_number":640,"short_name":"Phlm","long_name":"Philemon   (ΠΡΟΣ ΦΙΛΗΜΟΝΑ)"},"650":{"book_color":"#ffff00","book_number":650,"short_name":"Heb","long_name":"Hebrews   (ΠΡΟΣ ΕΒΡΑΙΟΥΣ)"},"660":{"book_color":"#00ff00","book_number":660,"short_name":"Jam","long_name":"JAMES   (ΕΠΙΣΤΟΛΗ ΙΑΚΩΒΟΥ)"},"670":{"book_color":"#00ff00","book_number":670,"short_name":"1Pet","long_name":"1 Peter   (ΕΠΙΣΤΟΛΗ ΠΕΤΡΟΥ Α)"},"680":{"book_color":"#00ff00","book_number":680,"short_name":"2Pet","long_name":"2 Peter   (ΕΠΙΣΤΟΛΗ ΠΕΤΡΟΥ B)"},"690":{"book_color":"#00ff00","book_number":690,"short_name":"1Jn","long_name":"1 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ Α)"},"700":{"book_color":"#00ff00","book_number":700,"short_name":"2Jn","long_name":"2 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ b)"},"710":{"book_color":"#00ff00","book_number":710,"short_name":"3Jn","long_name":"3 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ Γ)"},"720":{"book_color":"#00ff00","book_number":720,"short_name":"Jud","long_name":"Jude   (ΕΠΙΣΤΟΛΗ ΙΟΥΔΑ)"},"730":{"book_color":"#ff7c80","book_number":730,"short_name":"Rev","long_name":"REVELATION   (ΙΩΑΝΝΟΥ ΑΠΟΚΑΛΥΨΙΣ)"}},"maxChapters":{"470":{"book_number":470,"max_chapter":28},"480":{"book_number":480,"max_chapter":16},"490":{"book_number":490,"max_chapter":24},"500":{"book_number":500,"max_chapter":21},"510":{"book_number":510,"max_chapter":28},"520":{"book_number":520,"max_chapter":16},"530":{"book_number":530,"max_chapter":16},"540":{"book_number":540,"max_chapter":13},"550":{"book_number":550,"max_chapter":6},"560":{"book_number":560,"max_chapter":6},"570":{"book_number":570,"max_chapter":4},"580":{"book_number":580,"max_chapter":4},"590":{"book_number":590,"max_chapter":5},"600":{"book_number":600,"max_chapter":3},"610":{"book_number":610,"max_chapter":6},"620":{"book_number":620,"max_chapter":4},"630":{"book_number":630,"max_chapter":3},"640":{"book_number":640,"max_chapter":1},"650":{"book_number":650,"max_chapter":13},"660":{"book_number":660,"max_chapter":5},"670":{"book_number":670,"max_chapter":5},"680":{"book_number":680,"max_chapter":3},"690":{"book_number":690,"max_chapter":5},"700":{"book_number":700,"max_chapter":1},"710":{"book_number":710,"max_chapter":1},"720":{"book_number":720,"max_chapter":1},"730":{"book_number":730,"max_chapter":22}}}
+{
+  "books": {
+    "470": {
+      "book_color": "#ff6600",
+      "book_number": 470,
+      "short_name": "Mat",
+      "long_name": "(ACCORDING TO) MATTHEW  (ΚΑΤΑ ΜΑΤΘΑΙΟΝ)"
+    },
+    "480": {
+      "book_color": "#ff6600",
+      "book_number": 480,
+      "short_name": "Mar",
+      "long_name": "(ACCORDING TO) MARK   (ΚΑΤΑ ΜΑΡΚΟΝ)"
+    },
+    "490": {
+      "book_color": "#ff6600",
+      "book_number": 490,
+      "short_name": "Luk",
+      "long_name": "(ACCORDING TO) LUKE   (ΚΑΤΑ ΛΟΥΚΑΝ)"
+    },
+    "500": {
+      "book_color": "#ff6600",
+      "book_number": 500,
+      "short_name": "John",
+      "long_name": "(ACCORDING TO) JOHN   (ΚΑΤΑ ΙΩΑΝΝΗΝ)"
+    },
+    "510": {
+      "book_color": "#00ffff",
+      "book_number": 510,
+      "short_name": "Acts",
+      "long_name": "ACTS OF THE APOSTLES   (ΠΡΑΞΕΙΣ ΤΩΝ ΑΠΟΣΤΟΛΩΝ)"
+    },
+    "520": {
+      "book_color": "#ffff00",
+      "book_number": 520,
+      "short_name": "Rom",
+      "long_name": "Romans   (ΠΡΟΣ ΡΩΜΑΙΟΥΣ)"
+    },
+    "530": {
+      "book_color": "#ffff00",
+      "book_number": 530,
+      "short_name": "1Cor",
+      "long_name": "1 Corinthians   (ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Α)"
+    },
+    "540": {
+      "book_color": "#ffff00",
+      "book_number": 540,
+      "short_name": "2Cor",
+      "long_name": "2 Corinthians   (ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Β)"
+    },
+    "550": {
+      "book_color": "#ffff00",
+      "book_number": 550,
+      "short_name": "Gal",
+      "long_name": "Galatians   (ΠΡΟΣ ΓΑΛΑΤΑΣ)"
+    },
+    "560": {
+      "book_color": "#ffff00",
+      "book_number": 560,
+      "short_name": "Eph",
+      "long_name": "Ephesians   (ΠΡΟΣ ΕΦΕΣΙΟΥΣ)"
+    },
+    "570": {
+      "book_color": "#ffff00",
+      "book_number": 570,
+      "short_name": "Phil",
+      "long_name": "Philippians   (ΠΡΟΣ ΦΙΛΙΠΠΗΣΙΟΥΣ)"
+    },
+    "580": {
+      "book_color": "#ffff00",
+      "book_number": 580,
+      "short_name": "Col",
+      "long_name": "Colossians   (ΠΡΟΣ ΚΟΛOΣΣΑΕΙΣ)"
+    },
+    "590": {
+      "book_color": "#ffff00",
+      "book_number": 590,
+      "short_name": "1Ths",
+      "long_name": "1 Thessalonians   (ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Α)"
+    },
+    "600": {
+      "book_color": "#ffff00",
+      "book_number": 600,
+      "short_name": "2Ths",
+      "long_name": "2 Thessalonians   (ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Β)"
+    },
+    "610": {
+      "book_color": "#ffff00",
+      "book_number": 610,
+      "short_name": "1Tim",
+      "long_name": "1 Timothy   (ΠΡΟΣ ΤΙΜΟΘΕΟΝ Α)"
+    },
+    "620": {
+      "book_color": "#ffff00",
+      "book_number": 620,
+      "short_name": "2Tim",
+      "long_name": "2 Timothy   (ΠΡΟΣ ΤΙΜΟΘΕΟΝ B)"
+    },
+    "630": {
+      "book_color": "#ffff00",
+      "book_number": 630,
+      "short_name": "Tit",
+      "long_name": "Titus   (ΠΡΟΣ ΤΙΤΟΝ)"
+    },
+    "640": {
+      "book_color": "#ffff00",
+      "book_number": 640,
+      "short_name": "Phlm",
+      "long_name": "Philemon   (ΠΡΟΣ ΦΙΛΗΜΟΝΑ)"
+    },
+    "650": {
+      "book_color": "#ffff00",
+      "book_number": 650,
+      "short_name": "Heb",
+      "long_name": "Hebrews   (ΠΡΟΣ ΕΒΡΑΙΟΥΣ)"
+    },
+    "660": {
+      "book_color": "#00ff00",
+      "book_number": 660,
+      "short_name": "Jam",
+      "long_name": "JAMES   (ΕΠΙΣΤΟΛΗ ΙΑΚΩΒΟΥ)"
+    },
+    "670": {
+      "book_color": "#00ff00",
+      "book_number": 670,
+      "short_name": "1Pet",
+      "long_name": "1 Peter   (ΕΠΙΣΤΟΛΗ ΠΕΤΡΟΥ Α)"
+    },
+    "680": {
+      "book_color": "#00ff00",
+      "book_number": 680,
+      "short_name": "2Pet",
+      "long_name": "2 Peter   (ΕΠΙΣΤΟΛΗ ΠΕΤΡΟΥ B)"
+    },
+    "690": {
+      "book_color": "#00ff00",
+      "book_number": 690,
+      "short_name": "1Jn",
+      "long_name": "1 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ Α)"
+    },
+    "700": {
+      "book_color": "#00ff00",
+      "book_number": 700,
+      "short_name": "2Jn",
+      "long_name": "2 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ b)"
+    },
+    "710": {
+      "book_color": "#00ff00",
+      "book_number": 710,
+      "short_name": "3Jn",
+      "long_name": "3 John   (ΕΠΙΣΤΟΛΗ ΙΩΑΝΝΟΥ Γ)"
+    },
+    "720": {
+      "book_color": "#00ff00",
+      "book_number": 720,
+      "short_name": "Jud",
+      "long_name": "Jude   (ΕΠΙΣΤΟΛΗ ΙΟΥΔΑ)"
+    },
+    "730": {
+      "book_color": "#ff7c80",
+      "book_number": 730,
+      "short_name": "Rev",
+      "long_name": "REVELATION   (ΙΩΑΝΝΟΥ ΑΠΟΚΑΛΥΨΙΣ)"
+    }
+  },
+  "maxChapters": {
+    "470": { "book_number": 470, "max_chapter": 28 },
+    "480": { "book_number": 480, "max_chapter": 16 },
+    "490": { "book_number": 490, "max_chapter": 24 },
+    "500": { "book_number": 500, "max_chapter": 21 },
+    "510": { "book_number": 510, "max_chapter": 28 },
+    "520": { "book_number": 520, "max_chapter": 16 },
+    "530": { "book_number": 530, "max_chapter": 16 },
+    "540": { "book_number": 540, "max_chapter": 13 },
+    "550": { "book_number": 550, "max_chapter": 6 },
+    "560": { "book_number": 560, "max_chapter": 6 },
+    "570": { "book_number": 570, "max_chapter": 4 },
+    "580": { "book_number": 580, "max_chapter": 4 },
+    "590": { "book_number": 590, "max_chapter": 5 },
+    "600": { "book_number": 600, "max_chapter": 3 },
+    "610": { "book_number": 610, "max_chapter": 6 },
+    "620": { "book_number": 620, "max_chapter": 4 },
+    "630": { "book_number": 630, "max_chapter": 3 },
+    "640": { "book_number": 640, "max_chapter": 1 },
+    "650": { "book_number": 650, "max_chapter": 13 },
+    "660": { "book_number": 660, "max_chapter": 5 },
+    "670": { "book_number": 670, "max_chapter": 5 },
+    "680": { "book_number": 680, "max_chapter": 3 },
+    "690": { "book_number": 690, "max_chapter": 5 },
+    "700": { "book_number": 700, "max_chapter": 1 },
+    "710": { "book_number": 710, "max_chapter": 1 },
+    "720": { "book_number": 720, "max_chapter": 1 },
+    "730": { "book_number": 730, "max_chapter": 22 }
+  }
+}

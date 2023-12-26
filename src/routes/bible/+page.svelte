@@ -251,6 +251,7 @@
   <div class="flex">
     {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
       <div class="flex-1 py-2">
+        <!-- change Module Toggle -->
         <button
           on:click={() => {
             uiModule = module;
@@ -302,6 +303,7 @@
           <ChevronDown class="ml-2" />
         </button>
 
+        <!-- Add or Remove Modules toggle -->
         {#if pickedModules.filter((module) => !!module).slice(-1)[0] == module && !pickedModules[2]}
           <button
             on:click={() => {
@@ -331,6 +333,7 @@
     {/each}
   </div>
 
+  <!-- Change modules Dropdown -->
   {#if showingModulesDropdown}
     <ul class="flex flex-col border rounded-l my-1">
       {#each Object.entries(modules_obj).filter(([name]) => !pickedModules.includes(name)) as [moduleName, module] (moduleName)}
@@ -350,6 +353,7 @@
     </ul>
   {/if}
 
+  <!-- Add modules Dropdown -->
   {#if showingAddModuleDropdown && !pickedModules[2]}
     <ul class="flex flex-col border rounded-l my-1">
       {#each Object.entries(modules_obj).filter(([name]) => !pickedModules.includes(name)) as [moduleName, module] (moduleName)}
@@ -369,7 +373,7 @@
     </ul>
   {/if}
 
-  <!-- books -->
+  <!-- books Dropdown -->
   <div class={showingBooksDropdown ? 'block' : 'hidden'}>
     {#if !!modules_obj && !!modules_obj[uiModule]}
       {#each Object.entries(modules_obj[uiModule].books) as [book_number, book] (book_number)}
@@ -388,7 +392,7 @@
     {/if}
   </div>
 
-  <!-- chapters per book -->
+  <!-- chapters per book Dropdown -->
   {#if !!modules_obj && !!modules_obj[uiModule]?.books[bookNumber]}
     <div class={showingChaptersDropdown ? 'block' : 'hidden'}>
       {#each Array.from({ length: modules_obj[uiModule].books[bookNumber][0] }, (_, i) => i + 1) as chapter_number (chapter_number)}
@@ -406,6 +410,7 @@
     </div>
   {/if}
 
+  <!-- Headers -->
   <article>
     <div class="flex">
       {#each pickedModules.filter((module) => !!module) as module (module)}
@@ -456,6 +461,7 @@
       <ChevronRight />
     </button>
 
+    <!-- actual verses -->
     <section class="my-3">
       <p id="content-top">
         {#if !!versesData[pickedModules[0]]}
