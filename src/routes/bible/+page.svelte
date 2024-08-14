@@ -80,21 +80,19 @@
     modules_obj = (await response.json()) as BibleModules;
 
     const tmpUiModule = urlParams.get('t') ?? '';
-    uiModule = !!modules_obj[tmpUiModule] ? tmpUiModule : default_module;
+    uiModule = modules_obj[tmpUiModule] ? tmpUiModule : default_module;
 
     const tmpFirstPickedModule = urlParams.get('a1') ?? '';
-    pickedModules[0] = !!modules_obj[tmpFirstPickedModule]
-      ? tmpFirstPickedModule
-      : pickedModules[0];
+    pickedModules[0] = modules_obj[tmpFirstPickedModule] ? tmpFirstPickedModule : pickedModules[0];
 
     const tmpSecondPickedModule = urlParams.get('a2') ?? '';
-    pickedModules[1] = !!modules_obj[tmpSecondPickedModule] ? tmpSecondPickedModule : '';
+    pickedModules[1] = modules_obj[tmpSecondPickedModule] ? tmpSecondPickedModule : '';
 
     const tmpThirdPickedModule = urlParams.get('a3') ?? '';
-    pickedModules[2] = !!modules_obj[tmpThirdPickedModule] ? tmpThirdPickedModule : '';
+    pickedModules[2] = modules_obj[tmpThirdPickedModule] ? tmpThirdPickedModule : '';
 
     const tmpBookNumber = urlParams.get('b') ?? '470';
-    bookNumber = !!modules_obj[uiModule].books[parseInt(tmpBookNumber)]
+    bookNumber = modules_obj[uiModule].books[parseInt(tmpBookNumber)]
       ? parseInt(tmpBookNumber)
       : 470;
 
@@ -119,7 +117,7 @@
 
   const moveToOtherPlace = () => {
     for (let module of Object.keys(modules_obj)) {
-      if (!!modules_obj[module].books[bookNumber]) {
+      if (modules_obj[module].books[bookNumber]) {
         fetch(`/bibles/${module}/${bookNumber}/${chapterNumber}.json`)
           .then((response) => response.json())
           .then((data) => {
@@ -197,7 +195,7 @@
     }
   }
 
-  $: if (!!pickedModules[2]) {
+  $: if (pickedModules[2]) {
     showingAddModuleDropdown = false;
   }
 
@@ -247,7 +245,7 @@
   };
 </script>
 
-<div>
+<div class="max-w-[var(--entry-width)] mx-auto my-10 p-3">
   <div class="flex">
     {#each pickedModules.filter((module) => !!module) as module, moduleNumber (moduleNumber)}
       <div class="flex-1 py-2">
@@ -462,7 +460,7 @@
     </button>
 
     <!-- actual verses -->
-    <section class="my-3">
+    <section class="my-3 text-xl">
       <p id="content-top">
         {#if !!versesData[pickedModules[0]]}
           {#each Object.entries(versesData[pickedModules[0]]?.chapter) as [verseNumber, verse] (verseNumber)}

@@ -1,9 +1,8 @@
 <script>
   const navigation = [
-    { name: 'ძირითადი', href: '/' },
-    { name: 'წიგნები', href: '/წიგნები' },
-    { name: 'წმინდა წერილი', href: '/bible' },
-    { name: 'დაგვეკონტაქტეთ', href: '/contact' }
+    { name: 'Home', href: '/' },
+    { name: 'Bible', href: '/bible' },
+    { name: 'contact', href: '/contact' }
   ];
 
   let showingNavigationDropdown = false;
