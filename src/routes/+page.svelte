@@ -2,7 +2,7 @@
   <h1 class="text-3xl text-center">OurBible Bible Reading Webapp's Website</h1>
   <p class="text-xl my-5">
     To try it out, go to the
-    <a class="underline hover:text-sky-950" href="/bible ">bible web application page</a>
+    <a class="underline hover:text-sky-950" href="/bible ">bible page</a>
   </p>
   <p />
 </div>
